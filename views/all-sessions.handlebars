@@ -1,0 +1,136 @@
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    height: 41px;
+  }
+
+  .cancel-btn {
+    display: none
+  }
+
+  .join-btn {
+    display: none
+  }
+</style>
+
+<h4 class="text-center my-3 text-primary ">Welcome {{#if isHost}}trainer, {{/if}}{{username}} </h4>
+<h4>{{title}}</h4>
+
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Date Time</th>
+    <th>Host</th>
+    {{#unless isHost}}
+    <th>register</th>
+    {{/unless}}
+  </tr>
+  {{#each sessions}}
+  <tr>
+    <td>{{this.name}}</td>
+    <td>{{this.description}}</td>
+    <td>{{this.dateFormated}}</td>
+    <td>{{this.Person.fst_nam}} {{this.Person.lst_nam}}</td>
+
+
+    <!--  { {#unless isHost} } -->
+    <td class="nav-item">
+      <a name="add" id="add-{{this.id}}" data-session-id="{{this.id}}" data-user_id="{{../user_id}}" data-logon-id="{{../logon_id2}}"
+        class="btn btn-sm m-1 btn-success text-white  register-btn" role="button">register</a>
+      {{!--
+      <a href=/api/client/register> register </a> --}}
+
+      <a name="remove" id="cancel-{{this.id}}" data-session_id="{{this.id}}" data-user_id="{{../user_id}}" class="btn btn-sm m-1 btn-danger text-white cancel-btn"
+        role="button">cancel</a>
+
+      <a name="join" href="/join-session/{{this.conn_info}}" id="join-{{this.id}}" data-session-id="{{this.id}}" data-user_id="{{../user_id}}" data-logon-id="{{../logon_id2}}"
+        class="btn btn-sm m-1 btn-primary text-white  join-btn" role="button">Join session</a>
+
+      {{!--
+      <a href=/api/client/register> register </a> --}}
+    </td>
+    <!--   { {/unless} } -->
+    {{/each}}
+  </tr>
+</table>
+
+<script>
+
+  $(".btn").click(function (e) {
+
+    let action = $(this).attr("name");
+
+    if(action === "join"){
+      console.log("--join--");
+    }
+
+    if (action === "add") {
+
+      //alert("add");
+      var data = {
+        session_id: $(this).attr("data-session-id"),
+        logon_id: $(this).attr("data-logon-id"),
+        user_id: $(this).attr("data-user_id"),
+      };
+      console.log("--add--");
+      console.log(data);
+      // Performing our AJAX GET request
+      $.post("/api/client/register", data
+
+      )
+        // After the data comes back from the API
+        .then(function (response) {
+          // Storing an array of results in the results variable
+          console.log(response);
+          setButtons();
+        });
+    }
+
+    if (action === "remove") {
+      //alert("remove");
+      var data = {
+        user_id: $(this).attr("data-user_id"),
+        session_id: $(this).attr("data-session_id")
+      }
+      console.log("--remove--");
+      console.log(data);
+      $.post("/api/client/cancel", data)
+        // After the data comes back from the API
+        .then(function (response) {
+          // Storing an array of results in the results variable
+          console.log(response);
+          setButtons();
+        });
+    }
+  });
+
+
+  var setButtons = function () {
+    $.get("/api/client/my-sessions")
+      .then(function (response) {
+        // Storing an array of results in the results variable
+        console.log("setButtons----------response");
+        console.log(response);
+        $(".cancel-btn").hide();
+        $(".join-btn").hide();
+        $(".register-btn").show();
+        for (var i = 0; i < response.length; ++i) {
+          var session = response[i];
+          var id = session.session_id;
+          $("#add-" + id).hide();
+          $("#cancel-" + id).show();
+          $("#join-" + id).show();
+
+        }
+      });
+  };
+
+  window.onload = setButtons();
+
+
+{{!--  --}}
+</script>

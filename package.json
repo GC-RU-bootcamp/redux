@@ -1,0 +1,41 @@
+{
+  "name": "uberlyft",
+  "version": "1.0.0",
+  "description": "Video streaming app for project 2",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "watch": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.15.2",
+    "cloudinary": "^1.11.0",
+    "dotenv": "^5.0.1",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.14.2",
+    "formidable": "^1.2.1",
+    "moment": "^2.22.1",
+    "mysql2": "^1.3.6",
+    "npm": "^6.0.1",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "sequelize": "^4.3.1",
+    "socket.io": "^2.1.1",
+    "uuidv4": "^1.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canoebrook/streamapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/canoebrook/streamapp/issues"
+  },
+  "homepage": "https://github.com/canoebrook/streamapp#readme"
+}

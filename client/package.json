@@ -1,0 +1,29 @@
+{
+  "name": "redux-orm-v3",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "https://fathomless-wildwood-74450.herokuapp.com/",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
+    "react-scripts": "1.1.4",
+    "react-tiny-virtual-list": "^2.1.6",
+    "react-virtualized": "^9.20.0",
+    "redux": "^4.0.0",
+    "redux-devtools-extension": "^2.13.5",
+    "redux-little-router": "^15.1.1",
+    "redux-orm": "^0.12.1",
+    "redux-saga": "^0.16.0",
+    "redux-toolbelt": "^2.1.5",
+    "redux-toolbelt-saga": "^2.0.3",
+    "semantic-ui-react": "^0.81.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
