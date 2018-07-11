@@ -4,6 +4,7 @@ var bodyParser = require("body-parser");
 var session = require("express-session");
 var handlebars = require('express-handlebars');
 var socket = require('socket.io');
+var path = require("path");
 // Requiring passport as we've configured it
 var passport = require("./config/passport");
 
@@ -35,7 +36,7 @@ require("./routes/host-routes.js")(app);
 // }
 
 app.get("*", (req, res) => {
-  console.log("server.js app.get(*): ", __dirname + "\\client\\build\\index.html");
+  // console.log("server.js app.get(*): ", __dirname + "\\client\\build\\index.html");
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
