@@ -114,12 +114,15 @@ module.exports = function (app) {
         fullname: req.user.fst_nam + " " + req.user.lst_nam,
         isHost: req.user.role === 'host' ? true : false,
         loginInfo: {
+          id:  req.user.id,
           logon_id: req.user.logon_id,
           firstName: req.user.fst_nam,
           lastName: req.user.lst_nam,
           role: req.user.role,
           photo: req.user.photo,
           user_id: req.user.id,
+          email_adr: req.user.email_adr,
+          cell_phone: req.user.cell_phone,
         },
         sessions: result,
       };
@@ -136,3 +139,14 @@ module.exports = function (app) {
     res.sendFile(path.join(__dirname, "../public/html/createSession.html"));
   });
 };
+
+// const retval = {
+//   id:  req.user.id
+//   logon_id: req.user.logon_id,
+//   firstName: req.user.fst_nam,
+//   lastName: req.user.lst_nam,
+//   role: req.user.role,
+//   photo: req.user.photo,
+//   email_adr: req.user.email_adr,
+//   cell_phone: req.user.cell_phone,
+// }
