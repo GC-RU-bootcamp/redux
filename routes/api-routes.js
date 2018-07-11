@@ -102,7 +102,7 @@ module.exports = function (app) {
               console.log("/api/signup w/photo login:",req.user);
               // res.json("/all-sessions"); // old project 2
               const retval = {
-                id:  req.user.id
+                id:  req.user.id,
                 logon_id: req.user.logon_id,
                 firstName: req.user.fst_nam,
                 lastName: req.user.lst_nam,
@@ -140,7 +140,7 @@ module.exports = function (app) {
             }
             console.log("/api/signup no photo login:", req.user);
             const retval = {
-              id:  req.user.id
+              id:  req.user.id,
               logon_id: req.user.logon_id,
               firstName: req.user.fst_nam,
               lastName: req.user.lst_nam,
@@ -171,7 +171,7 @@ module.exports = function (app) {
     req.logout();
     // res.redirect("/"); //old  project2 
     const retval = {
-      id:  req.user.id
+      id:  req.user.id,
       logon_id: req.user.logon_id,
       firstName: req.user.fst_nam,
       lastName: req.user.lst_nam,
@@ -192,7 +192,7 @@ module.exports = function (app) {
       // The user is not logged in, send back an empty object
       /// res.json({}); // old project 2
       const retval = {
-        id:  req.user.id
+        id:  req.user.id,
         logon_id: req.user.logon_id,
         firstName: req.user.fst_nam,
         lastName: req.user.lst_nam,
@@ -212,7 +212,7 @@ module.exports = function (app) {
       //   photo: req.user.photo
       // });
       const retval = {
-        id:  req.user.id
+        id:  req.user.id,
         logon_id: req.user.logon_id,
         firstName: req.user.fst_nam,
         lastName: req.user.lst_nam,
