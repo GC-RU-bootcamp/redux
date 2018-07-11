@@ -35,7 +35,7 @@ module.exports = function (app) {
     console.log("/api/login req.user:", req.user);
     console.log("/api/login req.body:", req.body);
     const retval = {
-      id:  req.user.id
+      id:  req.user.id,
       logon_id: req.user.logon_id,
       firstName: req.user.fst_nam,
       lastName: req.user.lst_nam,
