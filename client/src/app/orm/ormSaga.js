@@ -5,7 +5,7 @@ import { loginAsync } from '../../features/login/loginActions';
 
 const loadSessions = () => {
 
-  return fetch('/api/host/show-sessions', {
+  return fetch('/all-sessions', {
     method: 'get',
     headers: {
       'Content-Type': 'application/json',
