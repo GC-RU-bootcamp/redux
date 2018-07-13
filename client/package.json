@@ -2,7 +2,7 @@
   "name": "redux-orm-v3",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://fathomless-wildwood-74450.herokuapp.com/",
+  "proxy": "https://peaceful-beyond-48489.herokuapp.com",
   "dependencies": {
     "axios": "^0.18.0",
     "react": "^16.4.1",

@@ -16,7 +16,6 @@ const ormReducer = (state = initialState, action) => {
   payload.forEach(sesh => {
     const clean_sesh = ramda.omit('Person' , sesh);
     const person_values = ramda.values(ramda.pick(['Person'],sesh))
-    console.log(person_values[0]);
     Session.parse(clean_sesh)
     User.parse(person_values[0]);
   });

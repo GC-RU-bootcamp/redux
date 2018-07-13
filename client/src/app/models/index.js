@@ -1,8 +1,9 @@
 import {Model, attr, fk } from "redux-orm";
+import ramda from 'ramda';
 
 export class User extends Model {
   static parse(sessionData) {
-        return this.create(sessionData);
+        return this.upsert(sessionData);
     }
 }
 
@@ -21,7 +22,7 @@ User.fields = {
 
 export class Session extends Model{
   static parse(sessionData) {
-        return this.create(sessionData);
+        return this.upsert(sessionData);
     }
 }
 
