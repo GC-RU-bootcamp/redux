@@ -4,10 +4,14 @@ import { attendAsync } from './sessionsActions.js';
 
 axios.defaults.withCredentials = true;
 
-const attend = (payload) => {
+const attend = ({people_id,logon_id,session_id}) => {
+  const body = {
+    user_id: people_id,
+    session_id,
+    logon_id
+  }
 
-
-  return axios.post("/api/client/register", payload)
+  return axios.post("/api/client/register", body)
   .then(function(response){
     return response
   })
@@ -20,7 +24,6 @@ function* attendFlow() {
   while (true) {
     const { payload } = yield take(attendAsync.TYPE)
     const { status } = yield call(attend, payload)
-
     if(status === 200){
       yield put({ type: attendAsync.success.TYPE})
     }

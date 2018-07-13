@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import { Link } from 'redux-little-router';
+
 import orm from '../../app/orm/index.js';
 import { Column, Table } from 'react-virtualized';
 import 'react-virtualized/styles.css'
@@ -9,7 +11,7 @@ import { attendAsync } from "./sessionsActions.js"
 const mapStatetoProps = state => {
 
   const session = orm.session(state.orm);
-  const { Session, User } = session;
+  const { Session, User , PeopleSession } = session;
 
   const sessions = Session.all().toRefArray();
 
@@ -22,10 +24,13 @@ const mapStatetoProps = state => {
     }
   })
 
+  const attended_ids = PeopleSession.all().toRefArray().map(people_session => people_session.session_id)
+
   return {
     sessionsWithNames,
     people_id: state.login.data.id,
-    logon_id: state.login.data.logon_id
+    logon_id: state.login.data.logon_id,
+    attended_ids
    };
 }
 
@@ -35,7 +40,7 @@ const actions = {
 
 class SessionsPage extends Component{
   render(){
-    const { sessionsWithNames = [], people_id, logon_id, attendAsync } = this.props
+    const { sessionsWithNames = [], people_id, logon_id, attendAsync,attended_ids } = this.props
     return(
       <div className="flex flex-column flex-auto items-center mt5">
         <Table
@@ -70,8 +75,27 @@ class SessionsPage extends Component{
             width={250}
             label='Link'
             dataKey='id'
-            cellRenderer={({cellData}) => <button onClick={() => attendAsync({people_id, logon_id, session_id: cellData})}>Register</button>}
-
+            cellDataGetter={({rowData}) => {
+              return {
+                conn_info: rowData.conn_info,
+                id: rowData.id
+              }
+            }}
+            cellRenderer={({cellData}) =>
+            attended_ids.includes(cellData.id)
+            ? <Link
+              className="f6 link white dim pv1 ph3 ba b--blue bg-blue br2"
+              href={"/join-session/" + cellData.conn_info}
+              >
+              Join Session
+              </Link>
+            : <button
+                className="f6 mr3 link white dim pv1 ph3 ba b--red bg-red br2"
+                onClick={() => attendAsync({people_id, logon_id, session_id: cellData})}
+              >
+              Register
+            </button>
+            }
           />
 
         </Table>

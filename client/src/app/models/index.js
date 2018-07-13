@@ -1,5 +1,5 @@
 import {Model, attr, fk } from "redux-orm";
-import ramda from 'ramda';
+
 
 export class User extends Model {
   static parse(sessionData) {
@@ -37,4 +37,18 @@ Session.fields = {
   min_attendees: attr(),
   max_attendees: attr(),
   confirmed: attr()
+};
+
+
+export  class PeopleSession extends Model {
+    static parse(mechData) {
+        return this.upsert(mechData);
+    }
+}
+
+PeopleSession.modelName = "PeopleSession";
+PeopleSession.fields = {
+    id : attr(),
+    people_id : fk("User"),
+    session_id : fk("Session"),
 };
