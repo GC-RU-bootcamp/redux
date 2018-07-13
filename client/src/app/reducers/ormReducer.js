@@ -1,3 +1,4 @@
+import ramda from 'ramda';
 import orm from "../orm";
 import { loginAsync } from '../../features/login/loginActions.js';
 
@@ -9,10 +10,16 @@ const ormReducer = (state = initialState, action) => {
 
   const session = orm.session(state);
   const { payload } = action
-  const { Session } = session;
+  const { Session, User } = session;
 
 
-  payload.forEach(sesh => Session.parse(sesh));
+  payload.forEach(sesh => {
+    const clean_sesh = ramda.omit('Person' , sesh);
+    const person_values = ramda.values(ramda.pick(['Person'],sesh))
+    console.log(person_values[0]);
+    Session.parse(clean_sesh)
+    User.parse(person_values[0]);
+  });
 
   // return a new version of the entities state object with the inserted entries
   return session.state;

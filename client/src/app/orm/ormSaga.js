@@ -23,7 +23,8 @@ function* loadData(){
     const response = yield call(loadSessions)
     console.log(response)
     if(response){
-      yield put({type: 'LOAD_SESSSIONS_SUCCESS', payload: response})
+      const { sessions } = response
+      yield put({type: 'LOAD_SESSSIONS_SUCCESS', payload: sessions})
       yield put(push('/sessions'));
     }
     else {

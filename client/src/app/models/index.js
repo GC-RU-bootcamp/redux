@@ -1,6 +1,10 @@
 import {Model, attr, fk } from "redux-orm";
 
-export class User extends Model{}
+export class User extends Model {
+  static parse(sessionData) {
+        return this.create(sessionData);
+    }
+}
 
 User.modelName = "User";
 User.fields = {
