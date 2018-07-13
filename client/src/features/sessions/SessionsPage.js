@@ -91,7 +91,7 @@ class SessionsPage extends Component{
               </Link>
             : <button
                 className="f6 mr3 link white dim pv1 ph3 ba b--red bg-red br2"
-                onClick={() => attendAsync({people_id, logon_id, session_id: cellData})}
+                onClick={() => attendAsync({people_id, logon_id, session_id: cellData.id})}
               >
               Register
             </button>
