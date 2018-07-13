@@ -5,7 +5,16 @@ import loginFlow from '../features/login/loginSaga.js';
 import watchLoginSuccess from './orm/ormSaga.js';
 import createSessionSaga from '../features/trainer/createSession/createSessionSaga';
 import attendFlow from '../features/sessions/sessionsSaga.js';
+import { watchJoinSession, webRTCFlow } from '../features/webRTC/webRTCSaga.js';
 
 export default function* rootSaga () {
-  yield all([registerSaga(),loginFlow(),watchLoginSuccess(),createSessionSaga(),attendFlow()])
+  yield all([
+    registerSaga(),
+    loginFlow(),
+    watchLoginSuccess(),
+    createSessionSaga(),
+    attendFlow(),
+    watchJoinSession(),
+    webRTCFlow()
+  ])
 }
