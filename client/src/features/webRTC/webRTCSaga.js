@@ -1,7 +1,8 @@
-import { take, put , call , fork} from 'redux-saga/effects'
+import { take, put , call } from 'redux-saga/effects'
 import { PUSH } from 'redux-little-router'
 import { initPeerConnection } from './webRTCActions.js';
-import { handleICECandidateEvent, handleAddStreamEvent, RTCConnectionStart , RTCVideoOffer } from './PeerConnectionUtils.js';
+import { RTCConnectionStart , RTCVideoOffer } from './PeerConnectionUtils.js';
+import { servers, constraints } from './webRTCConstants.js';
 import io from 'socket.io-client';
 
 export function* watchJoinSession() {
@@ -42,10 +43,12 @@ export function* webRTCFlow() {
   while(true){
     const { payload } = yield take(initPeerConnection.TYPE);
     const socket = yield call(connect);
+    console.log(socket)
     const data = yield call(hostCheck, payload);
+    console.log(data)
     socket.on('host-check', () => socket.emit('host-answer', data));
-    socket.on('signal-ready', (data,socket) => RTCConnectionStart(data,socket));
-    socket.on('video-offer', (data,socket) => RTCVideoOffer(data,socket));
+    socket.on('signal-ready', (data,socket) => RTCConnectionStart(data,socket,servers,constraints));
+    socket.on('video-offer', (data,socket) => RTCVideoOffer(data,socket,servers,constraints));
     socket.emit('room',payload)
   }
 }
