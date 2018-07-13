@@ -29,6 +29,11 @@ const loadPeopleSessions = () => {
     credentials: 'include'
   })
   .then(res => res.json(res))
+  .then(res =>({
+    status:200,
+    data:res
+  }))
+  .catch(err => err)
 }
 
 
@@ -36,14 +41,19 @@ function* loadData(){
     const response = yield call(loadSessions)
     if(response){
       const { sessions } = response
-      yield put({type: 'LOAD_SESSSIONS_SUCCESS', payload: sessions})
-      yield put(push('/sessions'));
+      yield put({type: 'LOAD_SESSIONS_SUCCESS', payload: sessions})
     }
     else {
       yield put({type: 'LOAD_SESSIONS_FAILURE'})
     }
-    const people_response = yield call(loadPeopleSessions);
-    console.log(people_response);
+    const {status, data} = yield call(loadPeopleSessions);
+    if(status === 200){
+        yield put({type: 'LOAD_PEOPLE_SESSIONS_SUCCESS', payload: data })
+        yield put(push('/sessions'));
+    }
+    else {
+      yield put({type: 'LOAD_PEOPLE_SESSIONS_FAILURE'})
+    }
 }
 
 
