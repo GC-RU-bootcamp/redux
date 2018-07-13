@@ -1,6 +1,5 @@
-import { servers, constraints } from './webRTCConstants.js';
 
-export const handleICECandidateEvent = function(event,socket) {
+const handleICECandidateEvent = function(event,socket) {
     if (event.candidate) {
       socket.emit('new-ice-canidate',{
         candidate: event.candidate
@@ -8,12 +7,12 @@ export const handleICECandidateEvent = function(event,socket) {
     }
   };
 
-export const handleAddStreamEvent = function(event) {
+const handleAddStreamEvent = function(event) {
     console.log('Remote Stream has been received!');
   };
 
-
-export const RTCConnectionStart = (data,socket) => (
+export const RTCConnectionStart = function(data,socket,servers,constraints,){
+    console.log('RTCPeerConnection has started');
     navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream){
       var myPeerConnection = new RTCPeerConnection(servers);
@@ -46,9 +45,9 @@ export const RTCConnectionStart = (data,socket) => (
     .catch(function(err){
       console.error('mediaStream error : ',err);
     })
-)
+}
 
-export const RTCVideoOffer = function(data,socket){
+export const RTCVideoOffer = function(data,socket,servers,constraints){
   const myPeerConnection = new RTCPeerConnection(servers);
 
   myPeerConnection.onicecandidate = handleICECandidateEvent;
