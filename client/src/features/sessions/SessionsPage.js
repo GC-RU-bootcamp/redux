@@ -4,16 +4,38 @@ import orm from '../../app/orm/index.js';
 import { Column, Table } from 'react-virtualized';
 import 'react-virtualized/styles.css'
 
+import { attendAsync } from "./sessionsActions.js"
+
 const mapStatetoProps = state => {
+
   const session = orm.session(state.orm);
-  const { Session } = session;
+  const { Session, User } = session;
+
   const sessions = Session.all().toRefArray();
-  return { sessions };
+
+  const sessionsWithNames = sessions.map(session => {
+    const person = User.withId(session.people_id)
+    const person_name = person.fst_nam + " " + person.lst_nam
+    return {
+      ...session,
+      person_name
+    }
+  })
+
+  return {
+    sessionsWithNames,
+    people_id: state.login.data.id,
+    logon_id: state.login.data.logon_id
+   };
+}
+
+const actions = {
+  attendAsync
 }
 
 class SessionsPage extends Component{
   render(){
-    const { sessions = [] } = this.props
+    const { sessionsWithNames = [], people_id, logon_id, attendAsync } = this.props
     return(
       <div className="flex flex-column flex-auto items-center mt5">
         <Table
@@ -21,8 +43,8 @@ class SessionsPage extends Component{
           height={400}
           headerHeight={20}
           rowHeight={30}
-          rowCount={sessions.length}
-          rowGetter={({ index }) => sessions[index]}
+          rowCount={sessionsWithNames.length}
+          rowGetter={({ index }) => sessionsWithNames[index]}
         >
           <Column
             label='Name'
@@ -42,13 +64,13 @@ class SessionsPage extends Component{
           <Column
             width={250}
             label='Trainer'
-            dataKey='people_id'
+            dataKey='person_name'
           />
           <Column
             width={250}
             label='Link'
-            dataKey='conn_info'
-            cellRenderer={({cellData}) => <button href={cellData}>Register</button>}
+            dataKey='id'
+            cellRenderer={({cellData}) => <button onClick={() => attendAsync({people_id, logon_id, session_id: cellData})}>Register</button>}
 
           />
 
@@ -58,4 +80,4 @@ class SessionsPage extends Component{
   }
 }
 
-export default connect(mapStatetoProps)(SessionsPage);
+export default connect(mapStatetoProps,actions)(SessionsPage);
