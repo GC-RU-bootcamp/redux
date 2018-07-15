@@ -10,7 +10,7 @@ const login = (payload) => {
       logon_pwd: payload.password.trim()
     }
 
-    return fetch('/api/login', {
+    return fetch('http://localhost:8080/api/login', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',

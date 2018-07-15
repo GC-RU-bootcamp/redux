@@ -11,7 +11,7 @@ const attend = ({people_id,logon_id,session_id}) => {
     logon_id
   }
 
-  return axios.post("/api/client/register", body)
+  return axios.post("http://localhost:8080/api/client/register", body)
   .then(function(response){
     return response
   })

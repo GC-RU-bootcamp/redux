@@ -21,7 +21,7 @@ const register = (payload) => {
     formData.append("lstNam", payload.last.trim());
     formData.append("createdBy",payload.user.trim());
 
-  return axios.post('/api/signup', formData,config)
+  return axios.post('http://localhost:8080/api/signup', formData,config)
   .then(function(response){
     return response
   })

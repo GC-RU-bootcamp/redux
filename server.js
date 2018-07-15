@@ -3,6 +3,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var session = require("express-session");
 var handlebars = require('express-handlebars');
+var cors = require('cors');
 var socket = require('socket.io');
 var path = require("path");
 // Requiring passport as we've configured it
@@ -17,6 +18,11 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
+
+app.use(cors({ origin: 'http://localhost:3000',
+exposedHeaders: ['Content-length', 'X-Foo', 'X-Bar'],
+credentials: true
+}))
 // We need to use sessions to keep track of our user's login status
 app.use(session({ secret: "keyboard cat", resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
@@ -62,13 +68,13 @@ db.sequelize.sync({force: false}).then(function() {
     //If the specific connection stops remove connection from connections array
     socket.on('disconnect',function(){
       console.log('\t:: Socket :: has lost a connection');
-      // NEW CODE 
+      // NEW CODE
       hostIDs = hostIDs.filter(item => {
         return item[0] != socket.id
       });
       console.log('this should only have no elements! : ' + hostIDs.length);
       Connections.splice(Connections.indexOf(socket),1);
-      console.log('\t:: Socket :: has ' + Connections.length + ' connections.');  
+      console.log('\t:: Socket :: has ' + Connections.length + ' connections.');
     });
 
     socket.on('room',function(roomID){
@@ -78,15 +84,18 @@ db.sequelize.sync({force: false}).then(function() {
     })
 
     socket.on('host-answer',function(data){
+      console.log(data);
       if(data.isHost === 1){
         var hostInfo = [ socket.id , data.uuid ];
         hostIDs.push(hostInfo);
+        console.log('WE SUCCEEDED!')
       }
       socket.emit('signal-ready',data);
     })
 
     //Server is listening for a video-offer msg from client-side
     socket.on('video-offer',function(data){
+      console.log('we got a video offer server side || ISHOST : ' + data.isHost + "  || UUID :"+ data.uuid);
       if(data.isHost === 1){
         socket.to(data.uuid).emit('video-offer',data);
       }else{
@@ -97,7 +106,7 @@ db.sequelize.sync({force: false}).then(function() {
         }
         socket.emit('no-host');
       }
-        
+
     });
     //Server is listening for a video-answer msg from client-side
     socket.on('video-answer',function(data){
@@ -105,9 +114,14 @@ db.sequelize.sync({force: false}).then(function() {
       socket.broadcast.emit('video-answer',data);
     });
     //Server is listening for a video-answer msg from client-side
-    socket.on('new-ice-canidate',function(data){
+    socket.on('new-ice-candidate',function(data){
       //if server receives video-answer msg broadcast the video-answer msg to all clients except original sender
-      socket.broadcast.emit('new-ice-canidate',data);
+      socket.broadcast.emit('new-ice-candidate',data);
     });
+
+    socket.on('stream-finished',function(data){
+      console.log(data);
+      socket.emit('stream-flow-end',data);
+    })
   });
 });
