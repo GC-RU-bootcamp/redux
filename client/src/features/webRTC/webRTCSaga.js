@@ -19,15 +19,14 @@ function* createEventChannel(socket, cb, payload) {
      };
 
     const handleAddStreamEvent = function(event) {
-      const tracks = event.stream.getTracks();
-
-      const audPairs = ramda.toPairsIn(tracks[0]);
-      const vidValues = ramda.valuesIn(tracks[1])
-
-      console.log(audPairs);
-      console.log(vidValues);
-
-      emit({audio: audPairs, video: vidValues});
+      console.log("remote stream received");
+      const { id } = event.stream;
+      const video = document.createElement('video');
+      video.setAttribute('class','dn');
+      video.setAttribute('id', id );
+      video.srcObject = event.stream;
+      document.body.appendChild(video);
+      emit(id);
      };
 
     socket.on('host-check',function(){
