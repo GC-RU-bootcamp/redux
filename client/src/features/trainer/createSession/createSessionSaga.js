@@ -19,7 +19,7 @@ const createSession = ({name, description, item_date, cost, min_attendees, max_a
 
   console.log(body);
 
-  return axios.post('/api/host/create-session', body)
+  return axios.post('http://localhost:8080/api/host/create-session', body)
   .then(function(response){
     return response
   })

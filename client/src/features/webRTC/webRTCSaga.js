@@ -1,9 +1,117 @@
 import { take, put , call } from 'redux-saga/effects'
 import { PUSH } from 'redux-little-router'
+import ramda from 'ramda'
 import { initPeerConnection } from './webRTCActions.js';
-import { RTCConnectionStart , RTCVideoOffer } from './PeerConnectionUtils.js';
+import { eventChannel } from 'redux-saga';
 import { servers, constraints } from './webRTCConstants.js';
+import store from '../../app/store/index.js'
 import io from 'socket.io-client';
+
+function* createEventChannel(socket, cb, payload) {
+  return eventChannel(emit => {
+
+    const handleICECandidateEvent = function(event) {
+      if (event.candidate){
+        socket.emit('new-ice-candidate', {
+          candidate: event.candidate
+        })
+      }
+     };
+
+    const handleAddStreamEvent = function(event) {
+      const tracks = event.stream.getTracks();
+
+      const audPairs = ramda.toPairsIn(tracks[0]);
+      const vidValues = ramda.valuesIn(tracks[1])
+
+      console.log(audPairs);
+      console.log(vidValues);
+
+      emit({audio: audPairs, video: vidValues});
+     };
+
+    socket.on('host-check',function(){
+      cb.then(function(data){
+        data.uuid = payload;
+        socket.emit('host-answer',data)
+      })
+    });
+
+    socket.on('signal-ready',function(data){
+      console.log('RTCPeerConnection has started');
+      navigator.mediaDevices.getUserMedia(constraints)
+      .then(function(stream){
+        var myPeerConnection = new RTCPeerConnection(servers);
+
+        myPeerConnection.onicecandidate = handleICECandidateEvent
+        myPeerConnection.onaddstream = handleAddStreamEvent
+        myPeerConnection.addStream(stream);
+
+        socket.on('new-ice-candidate',function(response){
+          var candidate = new RTCIceCandidate(response.candidate);
+          myPeerConnection.addIceCandidate(candidate);
+        });
+
+        myPeerConnection.createOffer()
+        .then(function(offer){
+          myPeerConnection.setLocalDescription(offer);
+        })
+        .then(function(){
+          const sdpData = {
+            sdp: myPeerConnection.localDescription,
+            uuid: data.uuid,
+            isHost: data.isHost
+          };
+          socket.on('video-answer',function(res){
+            var description = new RTCSessionDescription(res.sdp);
+            myPeerConnection.setRemoteDescription(description);
+          });
+        socket.emit('video-offer',sdpData);
+      });
+      })
+      .catch(function(err){
+        console.error('mediaStream error : ',err);
+      })
+    });
+
+    socket.on('video-offer',function(data){
+        console.log('video-offer has started on the client')
+        const myPeerConnection = new RTCPeerConnection(servers);
+
+        myPeerConnection.onicecandidate = handleICECandidateEvent
+        myPeerConnection.onaddstream = handleAddStreamEvent
+
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(function(stream){
+          var description = new RTCSessionDescription(data.sdp);
+          myPeerConnection.setRemoteDescription(description);
+          myPeerConnection.addStream(stream);
+
+          socket.on('new-ice-candidate',function(res){
+            var candidate = new RTCIceCandidate(res.candidate);
+            myPeerConnection.addIceCandidate(candidate);
+          });
+
+          myPeerConnection.createAnswer()
+          .then(function(answer){
+            myPeerConnection.setLocalDescription(answer);
+          })
+          .then(function(){
+            socket.emit('video-answer',{
+              sdp: myPeerConnection.localDescription,
+            });
+          });
+        })
+        .catch(function(err){
+          console.error('mediaStream error : ', err);
+        });
+    });
+
+    return () => {
+      socket.close();
+    };
+  });
+}
 
 export function* watchJoinSession() {
   while(true){
@@ -17,7 +125,7 @@ export function* watchJoinSession() {
 }
 
 function connect() {
-  const socket = io();
+  const socket = io('http://localhost:8080');
   return new Promise(resolve => {
     socket.on('connect', () => {
       resolve(socket);
@@ -26,7 +134,7 @@ function connect() {
 }
 
 const hostCheck = (uuid) => {
-  return fetch('/api/session/' + uuid, {
+  return fetch('http://localhost:8080/api/session/' + uuid, {
     method: 'get',
     headers: {
       'Content-Type': 'application/json',
@@ -43,12 +151,12 @@ export function* webRTCFlow() {
   while(true){
     const { payload } = yield take(initPeerConnection.TYPE);
     const socket = yield call(connect);
-    console.log(socket)
-    const data = yield call(hostCheck, payload);
-    console.log(data)
-    socket.on('host-check', () => socket.emit('host-answer', data));
-    socket.on('signal-ready', (data,socket) => RTCConnectionStart(data,socket,servers,constraints));
-    socket.on('video-offer', (data,socket) => RTCVideoOffer(data,socket,servers,constraints));
+    const cb = hostCheck(payload);
+    const channel = yield call(createEventChannel,socket,cb,payload);
     socket.emit('room',payload)
+    while(true){
+      const payload = yield take(channel)
+      yield put({ type: initPeerConnection.success.TYPE, payload });
+    }
   }
 }

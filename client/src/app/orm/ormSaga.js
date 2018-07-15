@@ -5,7 +5,7 @@ import { loginAsync } from '../../features/login/loginActions';
 
 const loadSessions = () => {
 
-  return fetch('/all-sessions', {
+  return fetch('http://localhost:8080/all-sessions', {
     method: 'get',
     headers: {
       'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ const loadSessions = () => {
 
 const loadPeopleSessions = () => {
 
-  return fetch('/api/client/my-sessions', {
+  return fetch('http://localhost:8080/api/client/my-sessions', {
     method: 'get',
     headers: {
       'Content-Type': 'application/json',
